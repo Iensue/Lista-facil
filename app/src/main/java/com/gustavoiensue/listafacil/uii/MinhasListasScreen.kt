@@ -1,5 +1,8 @@
 package com.gustavoiensue.listafacil.uii
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,80 +27,79 @@ import kotlinx.coroutines.launch
 fun MinhasListasScreen(dao: ItemDao) {
     val itensDaLista by dao.buscarTodosItens().collectAsState(initial = emptyList())
     var mostrarDialog by remember { mutableStateOf(false) }
-
-    // rodar a função de deletar no banco de dados
     val coroutineScope = rememberCoroutineScope()
 
     val corVerdePrincipal = Color(0xFF4CAF50)
     val corFundo = Color(0xFFE8F5E9)
 
-    Scaffold(
-        containerColor = corFundo,
-        topBar = {
-            TopAppBar(
-                title = { Text("Minhas Listas", fontWeight = FontWeight.Bold, color = corVerdePrincipal) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = corFundo)
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { mostrarDialog = true },
-                containerColor = corVerdePrincipal,
-                contentColor = Color.White,
-                shape = RoundedCornerShape(50)
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = "Adicionar")
-            }
-        }
-    ) { paddingValues ->
+    // 1. Envolvemos TODA a tela numa Box principal.
+    // Isso nos dá o poder de colocar coisas literalmente "por cima" de tudo.
+    Box(modifier = Modifier.fillMaxSize()) {
 
-        if (itensDaLista.isEmpty()) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(paddingValues),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Você ainda não tem nenhuma lista", fontWeight = FontWeight.Bold, color = corVerdePrincipal)
-                Text("Clique no + para começar", fontSize = 14.sp, color = corVerdePrincipal)
+        // 2. A sua tela normal fica aqui na camada do fundo
+        Scaffold(
+            containerColor = corFundo,
+            topBar = {
+                TopAppBar(
+                    title = { Text("Minhas Listas", fontWeight = FontWeight.Bold, color = corVerdePrincipal) },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = corFundo)
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { mostrarDialog = true }, // Ativa o nosso Pop-up customizado
+                    containerColor = corVerdePrincipal,
+                    contentColor = Color.White,
+                    shape = RoundedCornerShape(50)
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = "Adicionar")
+                }
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(paddingValues),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(itensDaLista) { item ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp), // Ajuste de padding
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically // Alinha tudo no meio
+        ) { paddingValues ->
+            if (itensDaLista.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Você ainda não tem nenhuma lista", fontWeight = FontWeight.Bold, color = corVerdePrincipal)
+                    Text("Clique no + para começar", fontSize = 14.sp, color = corVerdePrincipal)
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize().padding(paddingValues),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(itensDaLista) { item ->
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color.White),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
-                            Text(text = item.nome, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(text = item.nome, fontWeight = FontWeight.Bold, fontSize = 18.sp)
 
-                            // Agrupa a Quantidade e o Botão de Lixeira
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(text = "Qtd: ${item.quantidade}", color = Color.Gray)
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(text = "Qtd: ${item.quantidade}", color = Color.Gray)
 
-                                IconButton(
-                                    onClick = {
-                                        // Deleta o item do banco de dados ao clicar
-                                        coroutineScope.launch {
-                                            dao.deletarItem(item)
+                                    IconButton(
+                                        onClick = {
+                                            coroutineScope.launch { dao.deletarItem(item) }
                                         }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Delete,
+                                            contentDescription = "Deletar",
+                                            tint = Color.Red
+                                        )
                                     }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Delete,
-                                        contentDescription = "Deletar",
-                                        tint = Color.Red // Deixa a lixeira vermelha
-                                    )
                                 }
                             }
                         }
@@ -106,60 +108,98 @@ fun MinhasListasScreen(dao: ItemDao) {
             }
         }
 
+        // 3. A MÁGICA: O nosso Pop-up blindado (Overlay)
+        // Se mostrarDialog for true, ele desenha isso por cima da tela
         if (mostrarDialog) {
-            DialogAdicionarItem(
-                aoCancelar = { mostrarDialog = false },
-                aoConfirmar = { _, _ -> mostrarDialog = false },
-                dao = dao
-            )
-        }
-    }
-}
 
-@Composable
-fun DialogAdicionarItem(aoCancelar: () -> Unit, aoConfirmar: (String, String) -> Unit, dao: ItemDao) {
-    var nome by remember { mutableStateOf("") }
-    var quantidade by remember { mutableStateOf("") }
-    val corVerdePrincipal = Color(0xFF4CAF50)
-    val coroutineScope = rememberCoroutineScope()
+            // Fundo da tela escurecido
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.6f)) // Fundo preto transparente
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) {
+                        // Se o usuário clicar no fundo escuro, o Pop-up fecha
+                        mostrarDialog = false
+                    },
+                contentAlignment = Alignment.Center // Centraliza o cartão branco
+            ) {
 
-    AlertDialog(
-        onDismissRequest = aoCancelar,
-        title = { Text("Adicionar Novo Item", fontWeight = FontWeight.Bold, color = corVerdePrincipal) },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = nome,
-                    onValueChange = { nome = it },
-                    label = { Text("Nome do Item") },
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
-                    value = quantidade,
-                    onValueChange = { quantidade = it },
-                    label = { Text("Quantidade") },
-                    singleLine = true
-                )
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    if (nome.isNotBlank()) {
-                        coroutineScope.launch {
-                            dao.inserirItem(ItemLista(nome = nome, quantidade = quantidade))
-                            aoConfirmar(nome, quantidade)
+                // Cartão branco do formulário
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp)
+                        .clickable( // Impede que clicar dentro do cartão feche a tela
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {},
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                ) {
+                    // Estado dos textos do formulário
+                    var nome by remember { mutableStateOf("") }
+                    var quantidade by remember { mutableStateOf("") }
+
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Adicionar Novo Item",
+                            fontWeight = FontWeight.Bold,
+                            color = corVerdePrincipal,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+
+                        OutlinedTextField(
+                            value = nome,
+                            onValueChange = { nome = it },
+                            label = { Text("Nome do Item") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        OutlinedTextField(
+                            value = quantidade,
+                            onValueChange = { quantidade = it },
+                            label = { Text("Quantidade") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            TextButton(onClick = { mostrarDialog = false }) {
+                                Text("Cancelar", color = Color.Gray)
+                            }
+                            Button(
+                                onClick = {
+                                    if (nome.isNotBlank()) {
+                                        coroutineScope.launch {
+                                            dao.inserirItem(ItemLista(nome = nome, quantidade = quantidade))
+                                            mostrarDialog = false // Fecha ao salvar
+                                        }
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = corVerdePrincipal)
+                            ) {
+                                Text("Adicionar")
+                            }
                         }
                     }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = corVerdePrincipal)
-            ) {
-                Text("Adicionar")
+                }
             }
-        },
-        dismissButton = {
-            TextButton(onClick = aoCancelar) { Text("Cancelar", color = Color.Gray) }
         }
-    )
+    }
 }
