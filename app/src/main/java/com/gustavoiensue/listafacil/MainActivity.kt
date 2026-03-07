@@ -4,44 +4,29 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.room.Room
+import com.gustavoiensue.listafacil.data.ListaFacilDatabase
+import com.gustavoiensue.listafacil.uii.MinhasListasScreen
 import com.gustavoiensue.listafacil.ui.theme.ListaFácilTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Inicializa o banco de dados Room
+        val db = Room.databaseBuilder(
+            applicationContext,
+            ListaFacilDatabase::class.java, "banco-lista-facil"
+        ).build()
+
+        val dao = db.itemDao()
+
         enableEdgeToEdge()
         setContent {
             ListaFácilTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                // Chama a tela chamando o banco de dados
+                MinhasListasScreen(dao = dao)
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ListaFácilTheme {
-        Greeting("Android")
     }
 }
