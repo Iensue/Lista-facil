@@ -43,13 +43,13 @@ class MainActivity : ComponentActivity() {
             ListaFácilTheme {
                 val navController = rememberNavController()
 
-                // Variável que "escuta" em qual ecrã (rota) o utilizador está no momento
+                // Variável que escolhe qual rota ultilizar
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val rotaAtual = navBackStackEntry?.destination?.route
 
                 val corVerdePrincipal = Color(0xFF4CAF50)
 
-                // O Scaffold global vai segurar a nossa barra inferior
+                // configuração da barra inferior
                 Scaffold(
                     bottomBar = {
                         // Só mostra a barra inferior se NÃO estiver no login nem no cadastro
@@ -76,20 +76,20 @@ class MainActivity : ComponentActivity() {
                                     )
                                 )
 
-                                // 2. Botão Promoções (Sem ação por enquanto)
+                                // 2. Botão Promoções
                                 NavigationBarItem(
                                     icon = { Icon(Icons.Filled.Star, contentDescription = "Promoções") },
                                     label = { Text("Promoções") },
                                     selected = rotaAtual == "promocoes",
-                                    onClick = { /* Faremos o ecrã de promoções no futuro */ }
+                                    onClick = { /* futura promoções (ou nao) */ }
                                 )
 
-                                // 3. Botão Mapa (Sem ação por enquanto)
+                                // 3. Botão Mapa
                                 NavigationBarItem(
                                     icon = { Icon(Icons.Filled.Place, contentDescription = "Mapa") },
                                     label = { Text("Mapa") },
                                     selected = rotaAtual == "mapa",
-                                    onClick = { /* Faremos o ecrã do mapa no futuro */ }
+                                    onClick = { /* futuro mapa */ }
                                 )
 
                                 // 4. Botão Perfil
@@ -115,8 +115,8 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { paddingValues ->
 
-                    // O NavHost é o "mapa" da aplicação. Volta a iniciar no "login".
-                    // O modifier.padding garante que os ecrãs não fiquem escondidos atrás da barra
+
+
                     NavHost(
                         navController = navController,
                         startDestination = "login",

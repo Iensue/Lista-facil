@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "370242980564",
+    "project_id": "lista-facil-2c4de",
+    "storage_bucket": "lista-facil-2c4de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:370242980564:android:6db1a279240a0c69d34941",
+        "android_client_info": {
+          "package_name": "com.gustavoiensue.listafacil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbU8XWK0J8FpH8fIeprDtY1SIAsm98LYI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

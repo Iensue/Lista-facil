@@ -42,7 +42,7 @@ fun PerfilScreen(aoSair: () -> Unit) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Cartão 1: Informações do Usuário
+        // Informações do Usuário
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -53,7 +53,7 @@ fun PerfilScreen(aoSair: () -> Unit) {
                 modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // "Foto" de perfil (Círculo cinza)
+                // Foto de perfil
                 Box(
                     modifier = Modifier
                         .size(60.dp)
@@ -71,7 +71,7 @@ fun PerfilScreen(aoSair: () -> Unit) {
                         color = corVerdePrincipal
                     )
                     Text(
-                        text = "g...e@email.com",
+                        text = "gustavo@email.com",
                         color = Color.Gray,
                         fontSize = 14.sp
                     )
@@ -81,7 +81,7 @@ fun PerfilScreen(aoSair: () -> Unit) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Cartão 2: Menu de Opções
+        // Menu de Opções
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
