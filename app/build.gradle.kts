@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp") version "2.0.21-1.0.27"
-    id("com.google.gms.google-services") version "4.4.1"
+        id("com.google.gms.google-services") version "4.4.1"
 }
 
 android {
@@ -73,4 +73,7 @@ dependencies {
 
     // troca de telas
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    //maps-compose
+    implementation("com.google.maps.android:maps-compose:4.3.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
 }

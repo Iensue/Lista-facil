@@ -5,22 +5,28 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun PerfilScreen(aoSair: () -> Unit) {
+    // 1. Chamamos o Firebase
+    val auth = FirebaseAuth.getInstance()
+    val usuarioAtual = auth.currentUser
+
+    // 2. Puxamos o e-mail
+    val emailUsuario = usuarioAtual?.email ?: "Email não encontrado"
+
     val corVerdePrincipal = Color(0xFF4CAF50)
-    val corVerdeEscuro = Color(0xFF006400) // Verde mais escuro para o botão de sair
     val corFundo = Color(0xFFE8F5E9)
 
     Column(
@@ -28,120 +34,73 @@ fun PerfilScreen(aoSair: () -> Unit) {
             .fillMaxSize()
             .background(corFundo)
             .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        // Título no topo
-        Text(
-            text = "Perfil",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = corVerdePrincipal,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
+        // Foto de Perfil
+        Icon(
+            imageVector = Icons.Filled.AccountCircle,
+            contentDescription = "Foto de Perfil",
+            tint = corVerdePrincipal,
+            modifier = Modifier
+                .size(120.dp)
+                .background(Color.White, shape = CircleShape)
         )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Informações do Usuário
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Foto de perfil
-                Box(
-                    modifier = Modifier
-                        .size(60.dp)
-                        .background(Color.LightGray, shape = CircleShape)
-                )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                // Nome e Email
-                Column {
-                    Text(
-                        text = "Gustavo Iensue",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp,
-                        color = corVerdePrincipal
-                    )
-                    Text(
-                        text = "gustavo@email.com",
-                        color = Color.Gray,
-                        fontSize = 14.sp
-                    )
-                }
-            }
-        }
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Menu de Opções
+        // Cartão com as Informações
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
             shape = RoundedCornerShape(16.dp)
         ) {
-            Column {
-                ItemMenuPerfil(icone = Icons.Filled.Lock, texto = "Alterar Senha")
-                Divider(color = Color(0xFFEEEEEE), thickness = 1.dp)
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Meus Dados",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = corVerdePrincipal
+                )
 
-                ItemMenuPerfil(icone = Icons.Filled.Notifications, texto = "Notificações")
-                Divider(color = Color(0xFFEEEEEE), thickness = 1.dp)
+                Spacer(modifier = Modifier.height(16.dp))
 
-                ItemMenuPerfil(icone = Icons.Filled.Info, texto = "Informações")
-                Divider(color = Color(0xFFEEEEEE), thickness = 1.dp)
+                // Mostra o E-mail do usuário travado (readOnly = true) para ele não editar sem querer
+                OutlinedTextField(
+                    value = emailUsuario,
+                    onValueChange = {},
+                    label = { Text("Email Cadastrado") },
+                    readOnly = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = corVerdePrincipal,
+                        unfocusedBorderColor = corVerdePrincipal
+                    )
+                )
 
-                ItemMenuPerfil(icone = Icons.Filled.List, texto = "Listas Salvas")
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Botão de Sair da Conta
+                Button(
+                    onClick = {
+                        auth.signOut() // Desloga do servidor do Google
+                        aoSair()       // Aperta o gatilho para o Maestro mudar de tela
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935)), // Vermelho para perigo
+                    shape = RoundedCornerShape(25.dp)
+                ) {
+                    Icon(Icons.Filled.ExitToApp, contentDescription = "Sair", tint = Color.White)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("SAIR DA CONTA", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Botão de Sair
-        Button(
-            onClick = { aoSair() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = corVerdeEscuro),
-            shape = RoundedCornerShape(25.dp)
-        ) {
-            Text("Sair", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
-        }
-    }
-}
-
-// Componente reutilizável para cada linha do menu
-@Composable
-fun ItemMenuPerfil(icone: ImageVector, texto: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                imageVector = icone,
-                contentDescription = texto,
-                tint = Color.Gray,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(text = texto, fontSize = 16.sp, color = Color.DarkGray)
-        }
-        Icon(
-            imageVector = Icons.Filled.KeyboardArrowRight,
-            contentDescription = "Ir",
-            tint = Color.LightGray
-        )
     }
 }
