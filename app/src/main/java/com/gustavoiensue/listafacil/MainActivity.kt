@@ -20,6 +20,7 @@ import com.gustavoiensue.listafacil.uii.LoginScreen
 import com.gustavoiensue.listafacil.uii.MapasScreen
 import com.gustavoiensue.listafacil.uii.MinhasListasScreen
 import com.gustavoiensue.listafacil.uii.PerfilScreen
+import com.gustavoiensue.listafacil.uii.PromocoesScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,8 +83,13 @@ class MainActivity : ComponentActivity() {
                             MinhasListasScreen(
                                 dao = dao,
                                 aoIrParaPerfil = { navController.navigate("perfil") },
-                                aoIrParaMaps = { navController.navigate("maps") } // Adicione esta linha!
+                                aoIrParaMaps = { navController.navigate("maps") },
+                                aoIrParaPromocoes = { navController.navigate("promocoes") }
                             )
+                        }
+                        //Rota de promoções
+                        composable(route = "promocoes") {
+                            PromocoesScreen(aoVoltar = { navController.popBackStack() })
                         }
 
                         // ROTA DE PERFIL

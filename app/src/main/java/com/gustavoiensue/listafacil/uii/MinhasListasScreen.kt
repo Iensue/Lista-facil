@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MinhasListasScreen(dao: ItemDao, aoIrParaPerfil: () -> Unit, aoIrParaMaps: () -> Unit) {
+fun MinhasListasScreen(dao: ItemDao, aoIrParaPerfil: () -> Unit, aoIrParaMaps: () -> Unit, aoIrParaPromocoes: () -> Unit) {
     val itensDaLista by dao.buscarTodosItens().collectAsState(initial = emptyList())
     var mostrarDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -52,7 +52,7 @@ fun MinhasListasScreen(dao: ItemDao, aoIrParaPerfil: () -> Unit, aoIrParaMaps: (
                         onClick = { },
                         colors = NavigationBarItemDefaults.colors(selectedIconColor = corVerdePrincipal, selectedTextColor = corVerdePrincipal, indicatorColor = corFundo)
                     )
-                    NavigationBarItem(icon = { Icon(Icons.Filled.ShoppingCart, "Promo") }, label = { Text("Promo") }, selected = false, onClick = { })
+                    NavigationBarItem(icon = { Icon(Icons.Filled.ShoppingCart, "Promo") }, label = { Text("Promo") }, selected = false, onClick = { aoIrParaPromocoes() })
                     NavigationBarItem(icon = { Icon(Icons.Filled.LocationOn, "Maps") }, label = { Text("Maps") }, selected = false,onClick = { aoIrParaMaps() })
                     NavigationBarItem(icon = { Icon(Icons.Filled.Person, "Perfil") }, label = { Text("Perfil") }, selected = false, onClick = { aoIrParaPerfil() })
                 }

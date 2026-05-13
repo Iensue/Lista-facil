@@ -24,7 +24,7 @@
         </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="CHAVE_DE_TESTE_PROVISORIA" />
+            android:value="AIzaSyA0SmykV_VTzuQCwcfyinWze5Zyye_n7Jc" />
     </application>
 
 </manifest>
