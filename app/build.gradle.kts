@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,7 +8,11 @@ plugins {
     id("com.google.devtools.ksp") version "2.0.21-1.0.27"
         id("com.google.gms.google-services") version "4.4.1"
 }
-
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
 android {
     namespace = "com.gustavoiensue.listafacil"
     compileSdk = 36
@@ -16,6 +23,8 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+        manifestPlaceholders["mapsApiKey"] = localProperties.getProperty("MAPS_API_KEY") ?: ""
+
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
