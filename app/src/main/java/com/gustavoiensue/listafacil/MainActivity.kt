@@ -95,11 +95,12 @@ class MainActivity : ComponentActivity() {
                         // ROTA DE PERFIL
                         composable(route = "perfil") {
                             PerfilScreen(
-                                aoSair = {
-                                    navController.navigate(route = "login") {
-                                        popUpTo(0) { inclusive = true }
+                                aoSair = {  navController.navigate(route = "login") {
+                                    popUpTo(0) { inclusive = true }
                                     }
-                                }
+
+                                },
+                                aoVoltar = { navController.popBackStack() }
                             )
                         }
                         //Rota do mapa

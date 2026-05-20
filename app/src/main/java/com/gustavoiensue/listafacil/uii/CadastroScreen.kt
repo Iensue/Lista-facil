@@ -125,7 +125,7 @@ fun CadastroScreen(aoCadastrar: () -> Unit, aoVoltarLogin: () -> Unit) {
                         // Lógica de Cadastro com Firebase
                         if (email.isNotEmpty() && senha.isNotEmpty() && nome.isNotEmpty()) {
                             if (senha == confirmarSenha) {
-                                // Cria o usuário lá no servidor do Google
+                                // Cria o usuário no servidor do Google
                                 auth.createUserWithEmailAndPassword(email, senha)
                                     .addOnCompleteListener { tarefa ->
                                         if (tarefa.isSuccessful) {
